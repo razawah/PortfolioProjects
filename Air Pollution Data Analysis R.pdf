@@ -1,0 +1,397 @@
+# Set the working directory to the location of your file
+setwd("C:/Users/user/Desktop/portfolio/air pollution")
+# Install the readr package (if not already installed)
+install.packages("readr")
+
+# Load the readr package
+library(readr)
+
+
+# Import the CSV file
+# Import the CSV file
+data <- read_csv("C:/Users/user/Desktop/portfolio/air pollution/death-rates-from-air-pollution.csv.csv")
+
+# Retrieve the full column specification for the data
+spec(data)
+
+
+# View the structure of the data
+str(data)
+
+
+# Preview the first few rows
+head(data)
+
+
+# Summarize the data
+summary(data)
+
+
+# Rename Columns
+colnames(data) <- c("Entity", "Code", "Year", "Household Air Pollution", "Ambient Particulate Matter Pollution", "Air Pollution", "Ambient Ozone Pollution")
+
+
+# Check for empty values in each column
+empty_values <- colSums(is.na(data))
+
+# Display the count of empty values in each column
+print(empty_values)
+
+data <- data %>%
+  mutate(Code = ifelse(Entity == "African Region (WHO)", "Africa Region", Code))
+
+# Set "East Asia & Pacific" in the 'Code' column based on condition
+data <- data %>%
+  mutate(Code = ifelse(Entity == "East Asia & Pacific (WB)", "East Asia & Pacific Region", Code))
+
+# Replace null values in 'Code' column with "Eastern Mediterranean Region" based on condition
+data <- data %>%
+  mutate(Code = ifelse(Entity == "Eastern Mediterranean Region (WHO)" & is.na(Code), "Eastern Mediterranean Region", Code))
+
+# Set "Eastern Mediterranean" in the 'Code' column based on condition
+data <- data %>%
+  mutate(Code = ifelse(Entity == "Eastern Mediterranean Region (WHO)", "Eastern Mediterranean Region", Code))
+
+# Set "UK" in the 'Code' column based on condition
+data <- data %>%
+  mutate(Code = ifelse(Entity == "England" | Entity == "Northern Ireland" | Entity == "Scotland" | Entity == "Wales", "UK", Code))
+
+# Set "EU & Central Asia" in the 'Code' column based on condition
+data <- data %>%
+  mutate(Code = ifelse(Entity == "Europe & Central Asia (WB)", "EU & Central Asia Region", Code))
+
+# Set "Europe" in the 'Code' column based on condition
+data <- data %>%
+  mutate(Code = ifelse(Entity == "European Region (WHO)", "Europe Region", Code))
+
+# Set "Latin America & Caribbean" in the 'Code' column based on condition
+data <- data %>%
+  mutate(Code = ifelse(Entity == "Latin America & Caribbean (WB)", "Latin America & Caribbean Region", Code))
+
+# Set "MENA" in the 'Code' column based on condition
+data <- data %>%
+  mutate(Code = ifelse(Entity == "Middle East & North Africa (WB)", "Middle East and North Africa Region", Code))
+
+# Set "North America" in the 'Code' column based on condition
+data <- data %>%
+  mutate(Code = ifelse(Entity == "North America (WB)", "North America Region", Code))
+
+# Set "OECD" in the 'Code' column based on condition
+data <- data %>%
+  mutate(Code = ifelse(Entity == "OECD Countries", "OECD Region", Code))
+
+# Set "Americas" in the 'Code' column based on condition
+data <- data %>%
+  mutate(Code = ifelse(Entity == "Region of the Americas (WHO)", "South Americas Region", Code))
+
+# Set "South Asia" in the 'Code' column based on condition
+data <- data %>%
+  mutate(Code = ifelse(Entity == "South Asia (WB)", "South Asia Region", Code))
+
+# Set "South East Asia" in the 'Code' column based on condition
+data <- data %>%
+  mutate(Code = ifelse(Entity == "South-East Asia Region (WHO)", "South East Asia Region", Code))
+
+# Set "Sub Sahara" in the 'Code' column based on condition
+data <- data %>%
+  mutate(Code = ifelse(Entity == "Sub-Saharan Africa (WB)", "Sub Sahara Region", Code))
+
+# Set "Western Pacific" in the 'Code' column based on condition
+data <- data %>%
+  mutate(Code = ifelse(Entity == "Western Pacific Region (WHO)", "Western Pacific Region", Code))
+
+# Set "G20" in the 'Code' column based on condition
+data <- data %>%
+  mutate(Code = ifelse(Entity == "G20", "G20 Countries Region", Code))
+  
+# Set "WB High Income" in the 'Code' column based on condition
+data <- data %>%
+  mutate(Code = ifelse(Entity == "World Bank High Income", "WB High Income Region", Code))
+
+# Set "WB Low Income" in the 'Code' column based on condition
+data <- data %>%
+  mutate(Code = ifelse(Entity == "World Bank Low Income", "WB Low Income Region", Code))
+
+# Set "WB Lower Middle Income" in the 'Code' column based on condition
+data <- data %>%
+  mutate(Code = ifelse(Entity == "World Bank Lower Middle Income", "WB Lower Middle Income Region", Code))
+
+# Set "WB Upper Middle Income" in the 'Code' column based on condition
+data <- data %>%
+  mutate(Code = ifelse(Entity == "World Bank Upper Middle Income", "WB Upper Middle Income Region", Code))
+
+
+# Define the file path
+file_path <- "C:/Users/user/Desktop/portfolio/air pollution/airpollutionclean_R.csv"
+
+# Save the dataframe as a CSV file
+write.csv(data, file = file_path, row.names = FALSE)
+
+# Define the file path
+file_path <- "C:/Users/user/Desktop/portfolio/air pollution/airpollutionclean_R.csv"
+
+# Load the CSV file
+loaded_data <- read.csv(file = file_path)
+
+# View the loaded data
+print(loaded_data)
+
+# Print the column names
+print(colnames(loaded_data))
+
+# Select the columns for calculation
+selected_columns <- c("Household.Air.Pollution", "Ambient.Particulate.Matter.Pollution", "Air.Pollution", "Ambient.Ozone.Pollution")
+
+# Calculate summary statistics using the summary() function
+summary_stats <- summary(loaded_data[selected_columns])
+
+# Calculate quantiles using the quantile() function
+quantiles <- sapply(loaded_data[selected_columns], quantile, probs = c(0.25, 0.50, 0.75))
+
+# Print the summary statistics
+print(summary_stats)
+
+# Print the quantiles
+print(quantiles)
+
+
+library(ggplot2)
+library(dplyr)
+
+# Calculate the mean pollution values for each year
+mean_data <- loaded_data %>%
+  group_by(Year) %>%
+  summarise(
+    Mean_Household_Air_Pollution = mean(Household.Air.Pollution),
+    Mean_Ambient_Particulate_Matter_Pollution = mean(Ambient.Particulate.Matter.Pollution),
+    Mean_Air_Pollution = mean(Air.Pollution),
+    Mean_Ambient_Ozone_Pollution = mean(Ambient.Ozone.Pollution)
+  )
+
+# Plot the trends of mean pollution values over time
+ggplot(mean_data, aes(x = Year)) +
+  geom_line(aes(y = Mean_Household_Air_Pollution, color = "Household Air Pollution")) +
+  geom_line(aes(y = Mean_Ambient_Particulate_Matter_Pollution, color = "Ambient Particulate Matter Pollution")) +
+  geom_line(aes(y = Mean_Air_Pollution, color = "Air Pollution")) +
+  geom_line(aes(y = Mean_Ambient_Ozone_Pollution, color = "Ambient Ozone Pollution")) +
+  labs(x = "Year", y = "Mean Pollution Level", title = "Trends of Mean Pollution Over Time") +
+  scale_color_manual(values = c("Household Air Pollution" = "blue",
+                                "Ambient Particulate Matter Pollution" = "green",
+                                "Air Pollution" = "red",
+                                "Ambient Ozone Pollution" = "orange")) +
+  theme_minimal()
+
+
+
+
+library(ggplot2)
+library(tidyr)
+
+# Filter the data to include only rows with "Region" in the Code column
+filtered_data <- loaded_data[grep("Region", loaded_data$Code), ]
+
+# Select the relevant columns for comparison
+pollution_data <- filtered_data[, c("Code", "Household.Air.Pollution", "Ambient.Particulate.Matter.Pollution", "Air.Pollution", "Ambient.Ozone.Pollution")]
+
+# Melt the data to have a single column for pollution variable and its values
+melted_data <- tidyr::pivot_longer(pollution_data, cols = -Code, names_to = "Pollution_Type", values_to = "Pollution_Level")
+
+# Create a bar plot to compare pollution levels across regions
+ggplot(melted_data, aes(x = Code, y = Pollution_Level, fill = Pollution_Type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(x = "Region", y = "Pollution Level", title = "Comparison of Pollution Levels Across Regions") +
+  scale_fill_manual(values = c("Household.Air.Pollution" = "blue", "Ambient.Particulate.Matter.Pollution" = "green", "Air.Pollution" = "red", "Ambient.Ozone.Pollution" = "orange")) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+
+
+library(ggplot2)
+library(dplyr)
+
+# Filter the data for countries (excluding regions)
+country_data <- loaded_data %>%
+  filter(!grepl("Region", Code, ignore.case = TRUE))
+
+# Calculate the mean Household Air Pollution for each country
+country_means <- country_data %>%
+  group_by(Entity) %>%
+  summarise(Mean_Household_Air_Pollution = mean(Household.Air.Pollution, na.rm = TRUE))
+
+# Select the top 10 countries with the highest mean Household Air Pollution
+top_countries <- country_means %>%
+  top_n(10, Mean_Household_Air_Pollution)
+
+# Create a bar plot to compare pollution levels for the top 10 countries
+ggplot(top_countries, aes(x = reorder(Entity, Mean_Household_Air_Pollution), y = Mean_Household_Air_Pollution)) +
+  geom_bar(stat = "identity", fill = "blue") +
+  labs(x = "Country", y = "Mean Household Air Pollution", title = "Top 10 Countries with Highest Household Air Pollution") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+
+
+library(ggplot2)
+library(dplyr)
+
+# Filter the data for countries (excluding regions)
+country_data <- loaded_data %>%
+  filter(!grepl("Region", Code, ignore.case = TRUE))
+
+# Calculate the mean Ambient Particulate Matter Pollution for each country
+country_means <- country_data %>%
+  group_by(Entity) %>%
+  summarise(Mean_Ambient_Particulate_Matter_Pollution = mean(Ambient.Particulate.Matter.Pollution, na.rm = TRUE))
+
+# Select the top 10 countries with the highest mean Ambient Particulate Matter Pollution
+top_countries <- country_means %>%
+  top_n(10, Mean_Ambient_Particulate_Matter_Pollution)
+
+# Create a bar plot to compare pollution levels for the top 10 countries
+ggplot(top_countries, aes(x = reorder(Entity, Mean_Ambient_Particulate_Matter_Pollution), y = Mean_Ambient_Particulate_Matter_Pollution)) +
+  geom_bar(stat = "identity", fill = "green") +
+  labs(x = "Country", y = "Mean Ambient Particulate Matter Pollution", title = "Top 10 Countries with Highest Ambient Particulate Matter Pollution") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+
+
+library(ggplot2)
+library(dplyr)
+
+# Filter the data for countries (excluding regions)
+country_data <- loaded_data %>%
+  filter(!grepl("Region", Code, ignore.case = TRUE))
+
+# Calculate the mean Air Pollution for each country
+country_means <- country_data %>%
+  group_by(Entity) %>%
+  summarise(Mean_Air_Pollution = mean(Air.Pollution, na.rm = TRUE))
+
+# Select the top 10 countries with the highest mean Air Pollution
+top_countries <- country_means %>%
+  top_n(10, Mean_Air_Pollution)
+
+# Create a bar plot to compare pollution levels for the top 10 countries
+ggplot(top_countries, aes(x = reorder(Entity, Mean_Air_Pollution), y = Mean_Air_Pollution)) +
+  geom_bar(stat = "identity", fill = "red") +
+  labs(x = "Country", y = "Mean Air Pollution", title = "Top 10 Countries with Highest Air Pollution") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+
+                       
+                       
+library(ggplot2)
+library(dplyr)
+
+# Filter the data for countries (excluding regions)
+country_data <- loaded_data %>%
+  filter(!grepl("Region", Code, ignore.case = TRUE))
+
+# Calculate the mean Ambient Ozone Pollution for each country
+country_means <- country_data %>%
+  group_by(Entity) %>%
+  summarise(Mean_Ambient_Ozone_Pollution = mean(Ambient.Ozone.Pollution, na.rm = TRUE))
+
+# Select the top 10 countries with the highest mean Ambient Ozone Pollution
+top_countries <- country_means %>%
+  top_n(10, Mean_Ambient_Ozone_Pollution)
+
+# Create a bar plot to compare pollution levels for the top 10 countries
+ggplot(top_countries, aes(x = reorder(Entity, Mean_Ambient_Ozone_Pollution), y = Mean_Ambient_Ozone_Pollution)) +
+  geom_bar(stat = "identity", fill = "orange") +
+  labs(x = "Country", y = "Mean Ambient Ozone Pollution", title = "Top 10 Countries with Highest Ambient Ozone Pollution") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+
+
+
+install.packages("countrycode")
+
+
+library(countrycode)
+
+# Filter the data to exclude rows with "Region" in the Code column
+filtered_data <- loaded_data[!grepl("Region", loaded_data$Code), ]
+
+# Extract the continents based on the country names
+continents <- countrycode::countrycode(sourcevar = filtered_data$Entity, origin = "country.name", destination = "continent")
+
+# Add the continents as a new column in the data
+filtered_data$Continent <- continents
+
+# View the updated data with continents
+print(filtered_data)
+
+
+
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# Filter the data to include only rows with non-NA values in Household.Air.Pollution and Continent columns
+filtered_data <- filtered_data[!is.na(filtered_data$`Household.Air.Pollution`) & !is.na(filtered_data$Continent),]
+
+# Calculate the mean values of Household Air Pollution by continent
+continent_means <- filtered_data %>%
+  group_by(Continent) %>%
+  summarise(mean_Household_Air_Pollution = mean(`Household.Air.Pollution`))
+
+# Plot the mean values as a bar graph
+ggplot(continent_means, aes(x = Continent, y = mean_Household_Air_Pollution)) +
+  geom_bar(stat = "identity", fill = "blue") +
+  labs(x = "Continent", y = "Mean Household Air Pollution", title = "Mean Household Air Pollution by Continent") +
+  theme_minimal()
+
+
+install.packages("maps")
+install.packages("mapdata")
+install.packages("countrycode")
+
+
+
+library(ggplot2)
+library(countrycode)
+
+# Filter the data to include only countries (exclude regions)
+filtered_data <- loaded_data[!grepl("Region", loaded_data$Code), ]
+
+# Compute the mean of Household.Air.Pollution for each country
+mean_data <- aggregate(Household.Air.Pollution ~ Entity, data = filtered_data, FUN = mean, na.rm = TRUE)
+
+# Merge with country codes and map coordinates
+merged_data <- merge(world_map, mean_data, by.x = "region", by.y = "Entity", all.x = TRUE)
+
+# Plot the map
+ggplot() +
+  geom_polygon(data = merged_data, aes(x = long, y = lat, group = group, fill = Household.Air.Pollution),
+               color = "gray", linewidth = 0.2) +
+  scale_fill_gradient(low = "pink", high = "red", na.value = "gray") +
+  theme_minimal() +
+  theme(panel.grid = element_blank()) +
+  labs(fill = "Household Air Pollution", title = "World Map of Household Air Pollution")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
